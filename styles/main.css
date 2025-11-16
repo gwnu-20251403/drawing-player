@@ -1,0 +1,51 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* 필요에 따라 조정 */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* 배경 캔버스는 전체화면 + 뒤로 보내기 */
+#background-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* 앱 루트는 캔버스 위에 얹힌 UI */
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 예시 레이아웃 (상단 헤더 + 메인 영역) */
+.app-header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+}
+
+.sidebar {
+  width: 200px;
+  border-right: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.content {
+  flex: 1;
+  padding: 1rem;
+}
