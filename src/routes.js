@@ -24,7 +24,7 @@ const routes = [
   },
   {
     path: '*',
-    name: 'Not Found',
+    name: 'NotFound',
     component: NotFoundPage,
     scene: 'default'
   }

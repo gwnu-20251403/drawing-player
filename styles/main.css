@@ -49,3 +49,8 @@ body {
   flex: 1;
   padding: 1rem;
 }
+
+.active {
+  font-weight: bold;
+  color: blue;
+}

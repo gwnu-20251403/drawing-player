@@ -27,6 +27,10 @@ export function navigateTo(pathname) {
 }
 
 export function initRouter() {
+  // 초기 진입 시 기본 경로 설정
+  if (!window.location.hash) {
+    window.location.hash = '/';
+  }
   // 뒤로가기/앞으로가기 대응
   window.addEventListener('hashchange', renderCurrentRoute);
   // 첫 로딩 시 렌더
@@ -36,6 +40,18 @@ export function initRouter() {
 function renderCurrentRoute() {
   const pathname = getCurrentPath();
   const route = matchRoute(pathname);
+  if (route) {
+    const activePathButton = document.querySelector(`button[data-link="${route.path}"]`);
+    if (activePathButton) {
+      document.querySelectorAll('button[data-link]').forEach((btn) => {
+        if (btn === activePathButton) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+  }
 
   const viewEl = document.getElementById('route-view');
   if (!viewEl) return;
