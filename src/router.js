@@ -1,6 +1,8 @@
 import { setScene } from './canvas/scenes.js';
 import routes from './routes.js';
 
+let currentPageInstance = null;
+
 function getCurrentPath() {
   // 예: "#/jazz" → "/jazz"
   const hash = window.location.hash || '';
@@ -40,6 +42,8 @@ export function initRouter() {
 function renderCurrentRoute() {
   const pathname = getCurrentPath();
   const route = matchRoute(pathname);
+
+  // 네비게이션 버튼 활성화 상태 반영
   if (route) {
     const activePathButton = document.querySelector(`button[data-link="${route.path}"]`);
     if (activePathButton) {
@@ -56,11 +60,16 @@ function renderCurrentRoute() {
   const viewEl = document.getElementById('route-view');
   if (!viewEl) return;
 
-  // 컴포넌트는 "HTML 문자열을 반환하는 함수"로 가정
-  viewEl.innerHTML = route.component();
+  // 이전 페이지 언마운트
+  if (currentPageInstance && typeof currentPageInstance.destroy === 'function') {
+    currentPageInstance.destroy();
+  }
+  // 새로운 페이지 인스턴스 생성 및 렌더
+  const instance = route.component(viewEl, route.props || {});
+  currentPageInstance = instance || null;
 
   // 라우트에 맞는 캔버스 배경 테마 설정
-  // if (route.scene) {
-  //   setScene(route.scene);
-  // }
+  if (route.scene) {
+    setScene(route.scene);
+  }
 }
