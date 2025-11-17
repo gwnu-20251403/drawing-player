@@ -1,6 +1,7 @@
 import { initRouter, navigateTo } from './router.js';
 import { initCanvas } from './canvas/canvasManager.js';
 import routes from './routes.js';
+import { getState, subscribe } from './core/store.js';
 
 const appEl = document.getElementById('app');
 
@@ -11,6 +12,9 @@ function renderLayout() {
       <nav>
         ${createNavButtons(routes)}
       </nav>
+      <div id="header-status">
+        Home 카운트: <span id="header-home-count">0</span>
+      </div>
     </header>
     <main id="route-view"></main>
   `;
@@ -23,7 +27,22 @@ function renderLayout() {
       navigateTo(path);
     });
   });
+
+  const headerHomeCountEl = () => document.getElementById('header-home-count');
+  function renderHeader(state) {
+    if (headerHomeCountEl()) {
+      headerHomeCountEl().textContent = String(state.counter);
+    }
+  }
+
+  renderHeader(getState());
+  
+  subscribe((newState) => {
+    renderHeader(newState);
+  });
 }
+
+
 
 function createNavButtons(routes) {
   let navButtons = '';

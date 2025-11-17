@@ -1,7 +1,7 @@
+import { getState } from '../core/store.js';
 import { drawScene } from './scenes.js';
 
 let canvas, ctx;
-let currentSceneName = 'home';
 
 export function initCanvas() {
   canvas = document.getElementById('background-canvas');
@@ -20,15 +20,11 @@ export function initCanvas() {
   requestAnimationFrame(loop);
 }
 
-export function setCanvasScene(sceneName) {
-  currentSceneName = sceneName;
-}
-
 function loop() {
   if (!ctx) return;
 
-  // 현재 장면을 기반으로 캔버스 그리기
-  drawScene(ctx, currentSceneName);
+  const state = getState();
+  drawScene(ctx, state);
 
   requestAnimationFrame(loop);
 }

@@ -1,4 +1,5 @@
 import { createComponent } from "../core/createComponent.js";
+import { getState, setState, subscribe } from "../core/store.js";
 
 export const HomePage = createComponent({
   template: (props) => `
@@ -18,18 +19,28 @@ export const HomePage = createComponent({
     const countEl = rootEl.querySelector('#home-count');
     const incBtn = rootEl.querySelector('#home-inc-btn');
     
+    function renderFromState(state) {
+      if (!countEl) return;
+      countEl.textContent = String(state.counter);
+    }
+
+    renderFromState(getState());
+
     function handleClick(){
-      count += 1;
-      if (countEl) {
-        countEl.textContent = String(count);
-      }
+      const currentState = getState();
+      setState({ counter: currentState.counter + 1 });
     }    
 
     incBtn?.addEventListener('click', handleClick)
 
+    const unsubscribe = subscribe((newState) => {
+      renderFromState(newState);
+    });
+
     return {
       destroy() {
         incBtn?.removeEventListener('click', handleClick);
+        unsubscribe();
       },
     };
   },
