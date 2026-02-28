@@ -1,56 +1,740 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* =========================================================
+   main.css (REPLACE ALL)
+========================================================= */
 
-html,
-body {
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body{
   width: 100%;
   height: 100%;
-  overflow: hidden; /* 필요에 따라 조정 */
+  overflow: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* 배경 캔버스는 전체화면 + 뒤로 보내기 */
-#background-canvas {
+:root{
+  --fg: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.70);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --album: clamp(220px, min(54vh, calc(100vh - 280px)), 640px);
+  --album-r: 22px;
+  --gap: clamp(18px, 2vw, 34px);
+}
+
+#app{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  color: var(--fg);
+}
+
+#background-canvas{
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
+  display: block;
 }
 
-/* 앱 루트는 캔버스 위에 얹힌 UI */
-#app {
+/* =========================================================
+   HOME
+========================================================= */
+
+.home{
+  width: 100%;
+  height: 100%;
   position: relative;
-  z-index: 1;
+}
+
+.home__stage{
+  height: 100%;
+  padding: 40px 24px 120px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  gap: 14px;
 }
 
-/* 예시 레이아웃 (상단 헤더 + 메인 영역) */
-.app-header {
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+.home__title{
+  font-size: 28px;
+  letter-spacing: -0.2px;
+  color: rgba(255,255,255,0.92);
 }
 
-.app-main {
-  flex: 1;
+.home__hint{
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+}
+
+.home__carousel{
+  margin-top: 18px;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
+  align-items: center;
+  overflow: visible;
+  border-radius: 18px;
 }
 
-.sidebar {
-  width: 200px;
-  border-right: 1px solid #ddd;
-  padding: 1rem;
+/* rail */
+.home__rail{
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  padding: clamp(14px, 2.6vh, 24px) clamp(120px, 34vw, 45vw) clamp(16px, 3vh, 28px);
+
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+
+  touch-action: none;
+  cursor: grab;
+}
+.home__rail.is-dragging{ cursor: grabbing; }
+.home__rail::-webkit-scrollbar{ display: none; }
+
+/* album card */
+.record{
+  flex: 0 0 auto;
+  width: var(--album);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transform: scale(0.86);
+  opacity: 0.55;
+  transform-origin: center center;
+  transition: transform 200ms var(--ease-out), opacity 200ms ease;
+  will-change: transform, opacity;
 }
 
-.content {
-  flex: 1;
-  padding: 1rem;
+.record:hover{
+  transform: scale(0.90);
+  opacity: 0.70;
 }
 
-.active {
-  font-weight: bold;
-  color: blue;
+.record.is-active{
+  transform: scale(1.02);
+  opacity: 1;
+}
+
+.record.is-active:hover{
+  transform: scale(1.04);
+  opacity: 1;
+}
+
+/* 앨범 배경/그림자 제거 */
+.record__anim{
+  width: var(--album);
+  height: var(--album);
+  position: relative;
+
+  border-radius: var(--album-r);
+  overflow: hidden;
+
+  background: transparent;
+  border: 0;
+  padding: 0;
+
+  filter: none;
+}
+
+.record__cover{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  transform: scale(1.00);
+  transition: transform 240ms var(--ease-out), filter 240ms ease;
+}
+.record:hover .record__cover{
+  transform: scale(1.02);
+  filter: brightness(0.92) contrast(1.05);
+}
+
+/* Album meta (book label) */
+.record__meta{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(10px);
+
+  border-radius: 0 0 var(--album-r) var(--album-r);
+
+  opacity: 0;
+  transform: translateY(65%);
+  transition: transform 220ms var(--ease-out), opacity 220ms ease;
+
+  pointer-events: none;
+}
+
+.record:hover .record__meta,
+.record:focus-visible .record__meta{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.record__title{
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.25;
+}
+
+.record__artist{
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.72);
+}
+
+/* "move like it’s the same element" source states */
+.record.is-fly-source{ pointer-events: none; }
+.record.is-fly-source .record__anim{
+  transform: scale(0.985);
+  filter: blur(1px);
+  transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+}
+.record.is-flying{ pointer-events: none; }
+.record.is-flying .record__anim{
+  opacity: 0;
+  transform: scale(0.98);
+  filter: blur(2px);
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.track-modal{
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  z-index: 50;
+}
+.track-modal.is-open{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.track-modal__backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(10px);
+}
+
+.track-modal__panel{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, calc(100vw - 48px));
+  background: rgba(20,20,20,0.78);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.55);
+}
+
+.track-modal__close{
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+}
+
+.track-modal__content{
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 22px;
+  align-items: center;
+  padding-top: 10px;
+}
+.track-modal__hero{ justify-self: start; transform: translateX(-10px); }
+.track-modal__meta{ justify-self: end; transform: translateX(10px); }
+
+.track-modal__hero{
+  position: relative;
+  width: var(--album);
+  height: var(--album);
+  margin: 0 auto;
+}
+
+.track-modal__heroSleeve{
+  position: absolute;
+  inset: 0;
+  border-radius: var(--album-r);
+  overflow: hidden;
+  box-shadow: none;
+  z-index: 2;
+}
+
+.track-modal__heroImg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 레코드: 커버 뒤 중앙 + 커버와 같은 크기 */
+.track-modal__heroDisc{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+
+  opacity: 0;
+  transform: translate(-50%, -50%) translateX(-22%) rotate(-14deg);
+  transition: transform 260ms var(--ease-out), opacity 200ms ease;
+}
+.track-modal.is-ejecting .track-modal__heroDisc{
+  opacity: 1;
+  transform: translate(-50%, -50%) translateX(18%) rotate(18deg);
+}
+
+.track-modal__meta{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 12px;
+}
+
+.track-modal__title{
+  font-size: 26px;
+  letter-spacing: -0.2px;
+}
+
+.track-modal__artist{
+  color: rgba(255,255,255,0.72);
+}
+
+.track-modal__chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip{
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.85);
+}
+
+.track-modal__actions{
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.88);
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.btn--primary{
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
+}
+
+/* Cover fly (Home -> Modal) */
+.ui-cover-fly{
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9998;
+  pointer-events: none;
+  overflow: hidden;
+  will-change: left, top, width, height, transform, opacity, border-radius;
+
+  transition:
+    left 420ms var(--ease-out),
+    top 420ms var(--ease-out),
+    width 420ms var(--ease-out),
+    height 420ms var(--ease-out),
+    border-radius 420ms var(--ease-out),
+    transform 420ms var(--ease-out),
+    opacity 160ms ease;
+
+  box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+}
+
+.ui-cover-fly__img{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* =========================================================
+   FLY DISC (Modal -> Play) + DOCK
+========================================================= */
+
+.ui-disc-fly{
+  position: fixed;
+  z-index: 80;
+  pointer-events: none;
+
+  border-radius: 999px;
+  overflow: hidden;
+
+  transition:
+    left 620ms var(--ease-out),
+    top 620ms var(--ease-out),
+    width 620ms var(--ease-out),
+    height 620ms var(--ease-out),
+    transform 620ms var(--ease-out),
+    opacity 420ms ease;
+
+  box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+}
+
+.ui-disc-fly__label{
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(0.2px) saturate(1.1);
+}
+
+.ui-disc-fly__hole{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10%;
+  height: 10%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ✅ 도킹되면 deckStage 안에서 absolute로 고정 */
+.ui-disc-fly.is-docked{
+  position: absolute;
+  inset: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: none;
+  z-index: 1;
+}
+
+/* spinning (fly도 같은 클래스 사용) */
+@keyframes discSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ui-disc-fly.is-spinning{
+  animation: discSpin 1.8s linear infinite;
+}
+
+/* =========================================================
+   PLAY PAGE (Deck + Panel)
+========================================================= */
+
+.page--play{
+  width: 100%;
+  height: 100%;
+
+  /* applyDeckVars에서 세팅됨 */
+  --deck-left: 24px;
+  --deck-top: 120px;
+  --deck-size: 420px;
+}
+
+.play{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 22px 24px 28px;
+}
+
+.play__header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.play__now{
+  color: rgba(255,255,255,0.78);
+  font-size: 14px;
+}
+
+.play__btn{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.88);
+  padding: 10px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.play__btn--primary{
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
+}
+
+/* deck stage */
+.play__deckStage{
+  position: fixed;
+  left: var(--deck-left);
+  top: var(--deck-top);
+  width: var(--deck-size);
+  height: var(--deck-size);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* fallback disc */
+.play__disc{
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+
+  background: radial-gradient(circle at 35% 30%,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.06) 28%,
+    rgba(0,0,0,0.65) 68%,
+    rgba(0,0,0,0.85) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.play__disc.is-hidden{
+  opacity: 0;
+}
+
+.play__discLabel{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 42%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.play__discHole{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10%;
+  height: 10%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.play__disc.is-spinning{
+  animation: discSpin 1.8s linear infinite;
+}
+
+/* tonearm */
+.play__tonearm{
+  position: absolute;
+  right: -12%;
+  top: 8%;
+  width: 56%;
+  height: 10px;
+  border-radius: 999px;
+  opacity: 0.82;
+  transform-origin: 10% 50%;
+  transform: rotate(20deg);
+
+  background: rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+  z-index: 2;
+}
+
+/* jazz tonearm */
+.page--play.is-jazz .play__tonearm{
+  opacity: 0.92;
+  transform: rotate(22deg);
+  background: linear-gradient(90deg,
+    rgba(122,86,24,0.95),
+    rgba(212,176,84,0.98),
+    rgba(255,236,170,0.95),
+    rgba(173,126,35,0.98),
+    rgba(94,66,18,0.95)
+  );
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* panel */
+.play__panel{
+  position: absolute;
+  left: calc(var(--deck-left) + var(--deck-size) + 42px);
+  right: 24px;
+  top: 86px;
+  bottom: 28px;
+
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: start;
+
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(20,20,20,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+}
+
+.play__panelCoverWrap{
+  width: 180px;
+  height: 180px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.play__cover{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.play__meta{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.play__title{
+  font-size: 22px;
+  letter-spacing: -0.2px;
+}
+
+.play__sub{
+  color: rgba(255,255,255,0.70);
+}
+
+.play__chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.play__chip{
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.85);
+}
+
+.play__row{
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.play__time{
+  color: rgba(255,255,255,0.70);
+  font-size: 12px;
+  text-align: center;
+}
+
+.play__seek{
+  width: 100%;
+}
+
+.play__controls{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.play__vol{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.75);
+  font-size: 12px;
+}
+.play__volume{
+  width: 140px;
+}
+
+/* =========================================================
+   Shared disc (modal hero)
+========================================================= */
+
+.disc{
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  position: relative;
+  background: radial-gradient(circle at 35% 30%,
+    rgba(255,255,255,0.22),
+    rgba(255,255,255,0.06) 28%,
+    rgba(0,0,0,0.65) 68%,
+    rgba(0,0,0,0.85) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+}
+
+.disc__label{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 42%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%,
+    rgba(255,255,255,0.25),
+    rgba(255,255,255,0.10) 35%,
+    rgba(0,0,0,0.35) 100%
+  );
+  border: 1px solid rgba(255,255,255,0.12);
 }

@@ -1,0 +1,111 @@
+{
+  "genres": [
+    { "id": "jazz", "name": "재즈", "scene": "jazz" },
+    { "id": "classic", "name": "클래식", "scene": "classic" },
+    { "id": "lofi", "name": "로-파이", "scene": "lofi" },
+    { "id": "rock", "name": "록", "scene": "rock" },
+    { "id": "pop", "name": "팝", "scene": "pop" }
+  ],
+  "tracks": [
+    {
+      "id": "jazz_001",
+      "title": "Take Five",
+      "artist": "The Dave Brubeck Quartet",
+      "album": "Time Out",
+      "durationSec": 324,
+      "genreId": "jazz",
+      "cover": "asset/cover/Take Five.jpg",
+      "audio": "asset/audio/Take Five.mp3"
+    },
+    {
+      "id": "jazz_002",
+      "title": "So What",
+      "artist": "Miles Davis",
+      "album": "Kind of Blue",
+      "durationSec": 562,
+      "genreId": "jazz",
+      "cover": "asset/cover/So What.jpg",
+      "audio": "asset/audio/So What.mp3"
+    },
+    {
+      "id": "classic_001",
+      "title": "The Four Seasons - Winter",
+      "artist": "Antonio Vivaldi",
+      "album": "The Four Seasons",
+      "durationSec": 565,
+      "genreId": "classic",
+      "cover": "asset/cover/The 4 Seasons(Winter).jpg",
+      "audio": "asset/audio/The 4 Seasons, Winter.mp3"
+    },
+    {
+      "id": "classic_002",
+      "title": "La Campanella",
+      "artist": "Franz Liszt",
+      "album": "La Campanella",
+      "durationSec": 323,
+      "genreId": "classic",
+      "cover": "asset/cover/La Campanella.jpg",
+      "audio": "asset/audio/La Campanella.mp3"
+    },
+    {
+      "id": "lofi_001",
+      "title": "Telegraph Hill",
+      "artist": "Mama Aiuto, Dan Gregory",
+      "album": "Chillhop Essentials Spring 2025",
+      "durationSec": 133,
+      "genreId": "lofi",
+      "cover": "asset/cover/Telegraph Hill.jpg",
+      "audio": "asset/audio/Telegraph Hill.mp3"
+    },
+    {
+      "id": "lofi_002",
+      "title": "Green Tea",
+      "artist": "Toonorth",
+      "album": "Chillhop Essentials Spring 2025",
+      "durationSec": 144,
+      "genreId": "lofi",
+      "cover": "asset/cover/Green Tea.jpg",
+      "audio": "asset/audio/Green Tea.mp3"
+    },
+    {
+      "id": "rock_001",
+      "title": "Back In Black",
+      "artist": "AC/DC",
+      "album": "Back In Black",
+      "durationSec": 255,
+      "genreId": "rock",
+      "cover": "asset/cover/Back In Black.jpg",
+      "audio": "asset/audio/Back In Black.mp3"
+    },
+    {
+      "id": "rock_002",
+      "title": "Highway to Hell",
+      "artist": "AC/DC",
+      "album": "Highway to Hell",
+      "durationSec": 209,
+      "genreId": "rock",
+      "cover": "asset/cover/Highway to Hell.jpg",
+      "audio": "asset/audio/Highway to Hell.mp3"
+    },
+    {
+      "id": "pop_001",
+      "title": "Billie Jean",
+      "artist": "Michael Jackson",
+      "album": "Thriller",
+      "durationSec": 295,
+      "genreId": "pop",
+      "cover": "asset/cover/Billie Jean.jpg",
+      "audio": "asset/audio/Billie Jean.mp3"
+    },
+    {
+      "id": "pop_002",
+      "title": "Smooth Criminal",
+      "artist": "Michael Jackson",
+      "album": "Bad",
+      "durationSec": 258,
+      "genreId": "pop",
+      "cover": "asset/cover/Smooth Criminal.jpg",
+      "audio": "asset/audio/Smooth Criminal.mp3"
+    }
+  ]
+}

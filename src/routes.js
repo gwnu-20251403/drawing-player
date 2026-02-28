@@ -1,7 +1,6 @@
 import { HomePage } from './pages/HomePage.js';
-import { JazzPage } from './pages/JazzPage.js';
-import { LoFiPage } from './pages/LoFiPage.js';
 import { NotFoundPage } from './pages/NotFoundPage.js';
+import { PlayPage } from './pages/PlayPage.js';
 
 const routes = [
   { 
@@ -10,17 +9,11 @@ const routes = [
     component: HomePage,
     scene: 'home' 
   },
-  {
-    path: '/jazz',
-    name: 'Jazz',
-    component: JazzPage,
-    scene: 'jazz' 
-  },
-  {
-    path: '/lo-fi',
-    name: 'Lo-Fi',
-    component: LoFiPage,
-    scene: 'lofi' 
+  { 
+    path: '/play', 
+    name: 'Play', 
+    component: PlayPage, 
+    scene: 'default' 
   },
   {
     path: '*',

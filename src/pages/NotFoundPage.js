@@ -1,16 +1,21 @@
-import { createComponent } from "../core/createComponent.js";
+import { Component } from "../core/Component.js";
 
-export const NotFoundPage = createComponent({
-  template: (props) => `
-    <div>
-      <h2>!!!404 Not Found!!!</h2>
-    </div>
-  `,
-  setup: ({ rootEl, props }) => {
-    return {
-      destroy() {
-        // 필요한 정리 작업이 있으면 여기에 작성
-      },
-    };
-  },
-});
+export class NotFoundPage extends Component {
+  render() {
+    const root = document.createElement('div');
+    root.className = 'page page--not-found';
+
+    // 상단 타이틀
+    const title = document.createElement('h1');
+    title.textContent = '404 - 페이지를 찾을 수 없습니다';
+    title.className = 'page-title';
+  }
+
+  afterMount() {
+    
+  }
+
+  beforeUnmount() {
+    
+  }
+}
